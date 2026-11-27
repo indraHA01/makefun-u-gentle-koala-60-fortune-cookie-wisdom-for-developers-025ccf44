@@ -24,7 +24,19 @@ import { dirname } from "node:path";
 
 const OUTPUT_PATH = process.env.OUTPUT_PATH ?? "/output/entry.txt";
 
+function validateEntry(text: string): void {
+  // A fortune cookie is one line that lands in a single breath: no
+  // embedded newlines, and it closes with sentence punctuation.
+  if (text.includes("\n") || text.includes("\r")) {
+    throw new Error("gate fail: entry must be a single line");
+  }
+  if (!/[.!?]$/.test(text.trim())) {
+    throw new Error("gate fail: entry must end with sentence punctuation");
+  }
+}
+
 function main(): void {
+  validateEntry(ENTRY);
   mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
 
   // Exactly the line — no trailing newline, no extra bytes.
